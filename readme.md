@@ -87,11 +87,14 @@ A solução é composta por:
 
 ![Criação da EFS](assets/EFS2.png)
 
+- Configurar o Security group do EFS
 ---
 
 ### 6. Criar o Launch Template
 - Sistema operacional: Amazon Linux  
 - Tipo: `t2.micro`  
+- Security group das EC2
+- Sua VPC sem especificar sub nets
 - Adicionar script [`USERDATA.sh`](./USERDATA.sh) para:
   - Instalar WordPress
   - Montar EFS
@@ -100,7 +103,11 @@ A solução é composta por:
 ---
 
 ### 7. Configurar o Target Group
+- Instances
+
 ![Target Group](assets/TG.png)
+
+- Health check path: / ou /wp-admin/images/wordpress-logo.svg
 
 ---
 
