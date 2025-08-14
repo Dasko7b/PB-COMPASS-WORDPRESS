@@ -1,14 +1,18 @@
-# Projeto WordPress em Alta Disponibilidade na AWS
+# 🚀 Projeto WordPress em Alta Disponibilidade na AWS
 
 ## 📖 Descrição
-Este projeto tem como objetivo implantar a plataforma **WordPress** na nuvem AWS de forma **escalável**, **tolerante a falhas** e **altamente disponível**.  
+Este projeto tem como objetivo implantar a plataforma **WordPress** na nuvem **AWS** de forma **escalável**, **tolerante a falhas** e **altamente disponível**.  
 A arquitetura proposta utiliza serviços gerenciados da AWS para garantir **desempenho**, **resiliência** e **facilidade de manutenção**, simulando um ambiente de produção real.
 
+---
+
 ## 🎯 Objetivos
-- Desenvolver competências práticas em **Infraestrutura como Código**.
+- Desenvolver competências práticas em **Infraestrutura como Código (IaC)**.
 - Provisionar recursos de forma segura e escalável.
 - Implementar arquitetura resiliente para aplicações web.
 - Explorar serviços essenciais da **AWS** no contexto de alta disponibilidade.
+
+---
 
 ## 🏗 Arquitetura
 A solução é composta por:
@@ -25,23 +29,27 @@ A solução é composta por:
 3. As instâncias acessam o banco de dados no **RDS** e arquivos no **EFS**.
 4. O **ASG** escala automaticamente com base no uso de CPU.
 
+---
+
 ## 🛠 Serviços AWS Utilizados
-- **Amazon VPC**: 2 subnets públicas, 4 privadas, IGW e NAT Gateway.
-- **Amazon EC2**: instâncias para rodar o WordPress.
-- **Amazon RDS**: instância Multi-AZ (quando permitido) para banco de dados.
-- **Amazon EFS**: sistema de arquivos compartilhado.
-- **Application Load Balancer (ALB)**: balanceamento de tráfego HTTP.
-- **Auto Scaling Group (ASG)**: ajuste automático de capacidade.
-- **AWS CloudWatch** (opcional): monitoramento de métricas.
+- **Amazon VPC** → 2 subnets públicas, 4 privadas, IGW e NAT Gateway.
+- **Amazon EC2** → instâncias para rodar o WordPress.
+- **Amazon RDS** → banco de dados relacional.
+- **Amazon EFS** → armazenamento compartilhado.
+- **Application Load Balancer (ALB)** → balanceamento de tráfego HTTP.
+- **Auto Scaling Group (ASG)** → ajuste automático de capacidade.
+- **AWS CloudWatch** *(opcional)* → monitoramento de métricas.
+
+---
 
 ## 📋 Etapas de Implementação
 
-### 1. Conhecer o WordPress localmente
+### 1️⃣ Conhecer o WordPress localmente
 - Executar via Docker Compose: [Imagem Oficial](https://hub.docker.com/_/wordpress)
 
 ---
 
-### 2. Criar a VPC
+### 2️⃣ Criar a VPC
 - Criar subnets públicas e privadas.
 - Configurar IGW e NAT Gateway.
 
@@ -49,98 +57,104 @@ A solução é composta por:
 
 ---
 
-### 3. Criar os Security Groups
-- **SG-ALB**  
-  - Entrada: HTTP (Qualquer)  
-  - Saída: HTTP (SG-EC2)
+### 3️⃣ Criar os Security Groups
+**SG-ALB**  
+- Entrada: HTTP (Qualquer)  
+- Saída: HTTP (SG-EC2)  
 
-- **SG-EC2**  
-  - Entrada: HTTP (SG-ALB), MySQL (SG-RDS)  
-  - Saída: Todo tráfego (Qualquer), MySQL (Qualquer), HTTP (Qualquer), NFS (Qualquer)
+**SG-EC2**  
+- Entrada: HTTP (SG-ALB), MySQL (SG-RDS)  
+- Saída: Todo tráfego (Qualquer), MySQL (Qualquer), HTTP (Qualquer), NFS (Qualquer)  
 
-- **SG-RDS**  
-  - Entrada: MySQL (SG-EC2)  
-  - Saída: MySQL (SG-EC2)
+**SG-RDS**  
+- Entrada: MySQL (SG-EC2)  
+- Saída: MySQL (SG-EC2)  
 
-- **SG-NFS**  
-  - Entrada: NFS (SG-EC2)  
-  - Saída: NFS (SG-EC2)
+**SG-NFS**  
+- Entrada: NFS (SG-EC2)  
+- Saída: NFS (SG-EC2)  
 
 ---
 
-### 4. Criar o RDS
-- Banco MySQL  
-- Free Tier  
+### 4️⃣ Criar o RDS
+- Banco **MySQL**  
+- **Free Tier**  
 - Tipo: `db.t3.micro`  
-- Associar à VPC  
-- Selecionar o Security Group do RDS  
-- Em configurações adicionais, usar o mesmo nome do identificador
+- Associar à **VPC**  
+- Selecionar **Security Group** do RDS  
+- Nome do banco igual ao identificador
 
 ---
 
-### 5. Criar o EFS
-- Na aba de EFS, criar um novo e selecionar **personalizar**.
+### 5️⃣ Criar o EFS
+- Criar **EFS** e selecionar **personalizar**.
 
 ![Criação da EFS](assets/EFS1.png)
 
-- Configurar nas subnets privadas 3 e 4 da VPC.
+- Configurar nas **subnets privadas 3 e 4**.
 
 ![Criação da EFS](assets/EFS2.png)
 
-- Configurar o Security group do EFS
+- Configurar o **Security Group** do EFS.
+
 ---
 
-### 6. Criar o Launch Template
-- Sistema operacional: Amazon Linux  
+### 6️⃣ Criar o Launch Template
+- SO: **Amazon Linux**  
 - Tipo: `t2.micro`  
-- Security group das EC2
-- Sua VPC sem especificar sub nets
-- Adicionar script [`USERDATA.sh`](./USERDATA.sh) para:
-  - Instalar WordPress
-  - Montar EFS
-  - Conectar ao RDS
+- Associar **Security Group** das EC2  
+- Selecionar **VPC** sem especificar subnets  
+- Adicionar script [`USERDATA.sh`](./USERDATA.sh) para:  
+  - Instalar WordPress  
+  - Montar EFS  
+  - Conectar ao RDS  
 
 ---
 
-### 7. Configurar o Target Group
-- Instances
+### 7️⃣ Configurar o Target Group
+- **Tipo**: Instances  
+- **Health Check Path**: `/` ou `/wp-admin/images/wordpress-logo.svg`  
 
 ![Target Group](assets/TG.png)
 
-- Health check path: / ou /wp-admin/images/wordpress-logo.svg
-
 ---
 
-### 8. Criar o Application Load Balancer
-- Associar às subnets públicas
-- Direcionar para o Target Group
+### 8️⃣ Criar o Application Load Balancer
+- Associar às **subnets públicas**  
+- Direcionar para o **Target Group**  
 
 ![ALB](assets/ALB.png)
 
 ---
 
-### 9. Configurar o Auto Scaling Group
-- Usar a imagem criada
-- Associar ao ALB
+### 9️⃣ Configurar o Auto Scaling Group
+- Utilizar a **imagem criada**  
+
+![ASG](assets/ASG1.png)
+
+- Associar ao **ALB**  
+
+![ASG](assets/ASG2.png)
+
 - Definir:
-  - **Desejado**: 2
-  - **Mínimo**: 2
-  - **Máximo**: 4
+  - **Desejado**: 2  
+  - **Mínimo**: 2  
+  - **Máximo**: 4  
 
 ---
 
-### 10. Resultado Final
+### 🔟 Resultado Final
 Se tudo ocorrer corretamente:
 
-![Resultado Final](/assets/image.png)
+![Resultado Final](assets/image.png)
 
 ---
 
 ## ⚠️ Observações Importantes
 - Contas AWS de estudo possuem **restrições**:  
-  - Instâncias EC2 devem conter tags obrigatórias (caso necessário).  
-- Sempre **excluir recursos** após finalizar para evitar custos indesejados.
-- Reiniciar instâncias pode resolver problemas de login.
+  - Instâncias EC2 podem exigir tags obrigatórias.  
+- Sempre **excluir recursos** após finalizar para evitar custos.  
+- Reiniciar instâncias pode resolver problemas de login.  
 
 ---
 
