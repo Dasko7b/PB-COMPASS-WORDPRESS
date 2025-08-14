@@ -139,8 +139,8 @@ Se tudo ocorrer corretamente:
 ## ⚠️ Observações Importantes
 - Contas AWS de estudo possuem **restrições**:  
   - Instâncias EC2 devem conter tags obrigatórias (caso necessário).  
-  - Reiniciar instâncias pode resolver problemas de login.
 - Sempre **excluir recursos** após finalizar para evitar custos indesejados.
+- Reiniciar instâncias pode resolver problemas de login.
 
 ---
 
