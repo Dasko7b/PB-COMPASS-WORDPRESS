@@ -132,7 +132,7 @@ A solução é composta por:
 ### 10. Resultado Final
 Se tudo ocorrer corretamente:
 
-![Resultado Final](image.png)
+![Resultado Final](/assets/image.png)
 
 ---
 
