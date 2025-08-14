@@ -35,64 +35,106 @@ A solução é composta por:
 - **AWS CloudWatch** (opcional): monitoramento de métricas.
 
 ## 📋 Etapas de Implementação
-1. **Conhecer o WordPress localmente**
-   - Executar via Docker Compose: [Imagem Oficial](https://hub.docker.com/_/wordpress)
-2. **Criar a VPC**
-   - Subnets públicas e privadas
-   - IGW e NAT Gateway
-   ![Criação da VPC](assets/VPC.png)
 
-2. **Criar a Security Groups**
-   - SG-ALB : 
-    - entrada: HTTP(Qualquer) / saída: HTTP (SG-EC2)
-   - SG-EC2 : 
-    - entrada: HTTP(SG-ALB),MYSQL(SG-RDS) / saída: Todo Tráfego(Qualquer), MYSQL(Qualquer),HTTP(Qualquer),NFS(QUALQUER)
-   - SG-RDS : 
-    - entrada: MYSQL (SG-EC2) / saída: MYSQL (SG-EC2)
-   - SG-NFS : 
-    - entrada: NFS (SG-EC2) / saída: NFS (SG-EC2)
+### 1. Conhecer o WordPress localmente
+- Executar via Docker Compose: [Imagem Oficial](https://hub.docker.com/_/wordpress)
 
+---
 
-3. **Criar o RDS**
-   - Banco MySQL
-   - Free Tier
-   - db.t3.micro
-   - Coloque na sua VPC
-   - Selecione security group criado RDS
-   - E em configurações adicionios coloque o mesmo nome do indentificador
-   
-4. **Criar o EFS**
-   - Na aba de EFS crie um novo e vá em personalizar
-    ![Criação da EFS](assets/EFS1.png)
-   - Configure nas sub redes privada 3 e 4 da sua VPC
-    ![Criação da EFS](assets/EFS2.png)
+### 2. Criar a VPC
+- Criar subnets públicas e privadas.
+- Configurar IGW e NAT Gateway.
 
-5. **Criar o Launch Template**
-   - Criar amazon linux
-   - t2.micro
-   - Script [`USERDATA.sh`](./USERDATA.sh) para instalar WordPress, montar EFS e conectar ao RDS(Use o meu caso necessário)
-6. **Configurar o Grupo de destino**
-    ![TG Group](/assets/TG.png)
+![Criação da VPC](assets/VPC.png)
 
-7. **Criar o Application Load Balancer**
-   - Associar subnets públicas e associar ao grupo de destino
-   ![ALB](/assets/ALB.png)
+---
 
-8. **Configurar o Auto Scaling Group**
-   - Utilizar a imagem criada
-   - Associar ao ALB
-   - Definir 2 como o desejado 
-   - 2 como o mínimo
-   - 4 como máximo 
+### 3. Criar os Security Groups
+- **SG-ALB**  
+  - Entrada: HTTP (Qualquer)  
+  - Saída: HTTP (SG-EC2)
 
-9. **Se tudo ocorreu bem**
-    ![alt text](image.png)
+- **SG-EC2**  
+  - Entrada: HTTP (SG-ALB), MySQL (SG-RDS)  
+  - Saída: Todo tráfego (Qualquer), MySQL (Qualquer), HTTP (Qualquer), NFS (Qualquer)
+
+- **SG-RDS**  
+  - Entrada: MySQL (SG-EC2)  
+  - Saída: MySQL (SG-EC2)
+
+- **SG-NFS**  
+  - Entrada: NFS (SG-EC2)  
+  - Saída: NFS (SG-EC2)
+
+---
+
+### 4. Criar o RDS
+- Banco MySQL  
+- Free Tier  
+- Tipo: `db.t3.micro`  
+- Associar à VPC  
+- Selecionar o Security Group do RDS  
+- Em configurações adicionais, usar o mesmo nome do identificador
+
+---
+
+### 5. Criar o EFS
+- Na aba de EFS, criar um novo e selecionar **personalizar**.
+
+![Criação da EFS](assets/EFS1.png)
+
+- Configurar nas subnets privadas 3 e 4 da VPC.
+
+![Criação da EFS](assets/EFS2.png)
+
+---
+
+### 6. Criar o Launch Template
+- Sistema operacional: Amazon Linux  
+- Tipo: `t2.micro`  
+- Adicionar script [`USERDATA.sh`](./USERDATA.sh) para:
+  - Instalar WordPress
+  - Montar EFS
+  - Conectar ao RDS
+
+---
+
+### 7. Configurar o Target Group
+![Target Group](assets/TG.png)
+
+---
+
+### 8. Criar o Application Load Balancer
+- Associar às subnets públicas
+- Direcionar para o Target Group
+
+![ALB](assets/ALB.png)
+
+---
+
+### 9. Configurar o Auto Scaling Group
+- Usar a imagem criada
+- Associar ao ALB
+- Definir:
+  - **Desejado**: 2
+  - **Mínimo**: 2
+  - **Máximo**: 4
+
+---
+
+### 10. Resultado Final
+Se tudo ocorrer corretamente:
+
+![Resultado Final](image.png)
+
+---
 
 ## ⚠️ Observações Importantes
-- As contas AWS de estudo possuem **restrições**:  
-  - Instâncias EC2 devem conter tags se necessário
-  - Caso necessário reiniciar as instâncias pode resolver alguns problemas de login
-   
+- Contas AWS de estudo possuem **restrições**:  
+  - Instâncias EC2 devem conter tags obrigatórias (caso necessário).  
+  - Reiniciar instâncias pode resolver problemas de login.
+- Sempre **excluir recursos** após finalizar para evitar custos indesejados.
+
 ---
 
 ✍️ **Autor:** Dyego Dasko
