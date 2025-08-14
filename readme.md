@@ -113,9 +113,10 @@ A solução é composta por:
 
 ### 7️⃣ Configurar o Target Group
 - **Tipo**: Instances  
-- **Health Check Path**: `/` ou `/wp-admin/images/wordpress-logo.svg`  
 
 ![Target Group](assets/TG.png)
+
+- **Health Check Path**: `/` ou `/wp-admin/images/wordpress-logo.svg`  
 
 ---
 
